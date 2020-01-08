@@ -1,0 +1,5 @@
+S-LSTM
+
+python main_baseline_rnn.py 5 207776314
+python main_baseline_rnn.py 10 908054
+python main_baseline_rnn.py 10 1273805

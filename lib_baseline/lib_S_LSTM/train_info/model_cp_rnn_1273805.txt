@@ -1,0 +1,7 @@
+window=10
+window_list=[3]
+lr=0.001
+lr_deacy=0.8
+patience=2
+epoch=30
+val_loss

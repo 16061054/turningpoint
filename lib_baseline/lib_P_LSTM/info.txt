@@ -1,0 +1,50 @@
+P-LSTM
+
+python main_baseline_rnn.py 10 207776314(稍微有点对不上)
+“”“
+test ---- f1, acc:  0.45969498910675377 0.4052757793764988
+             precision    recall  f1-score   support
+
+        0.0       0.98      0.20      0.34       621
+        1.0       0.30      0.99      0.46       213
+
+avg / total       0.81      0.41      0.37       834
+
+f1: 0.45969498910675377
+p: 0.29929078014184396
+r: 0.9906103286384976
+”“”
+python main_baseline_rnn.py 10 908054
+python main_baseline_rnn.py 10 1273805
+
+###################################################################################
+
+test_rnn_turning_point(window=window, window_list=[3], machineID=machineID, isRaw=True, isCurr=True) #window=5, window_list=[3]
+
+
+def _build_model(time_step, fearure_dim):
+    i = Input(shape=(time_step, fearure_dim))
+    m = RNN(time_step, fearure_dim)(i)
+    # m = RNN_SEPARATE(time_step, fearure_dim)(i)
+    # m = RNN_SEPARATE_2(time_step, fearure_dim)(i)
+    m = Dense(1, activation='sigmoid')(m)
+
+    model = Model(inputs=[i], outputs=[m])
+
+    model.summary()
+    model.compile(optimizer=optimizers.Adam(lr=0.001, clipvalue=15), loss=focal_loss(alpha=0.75, gamma=0)) #alpha=0.75, gamma=0 Adam(lr=0.0001)
+    return model
+
+def build_test(datas, machineID):
+    train_data, train_labels, val_data, val_labels, test_data, test_labels = datas
+
+    num_samples = train_data.shape[0]
+    time_step = train_data.shape[1]
+    fearure_dim = train_data.shape[2]
+
+    model = _build_model(time_step, fearure_dim)
+    print('Test...')
+    model_save_path = './lib_pure_curr/lib/model_cp_rnn_{}'.format(machineID)
+    # model_save_path = './lib_pure_curr/lib/model_cp_rnn_{}'.format(machineID)
+    model.load_weights(model_save_path)
+    return model

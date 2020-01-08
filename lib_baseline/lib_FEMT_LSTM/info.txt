@@ -1,0 +1,38 @@
+FEMT − LSTM
+
+python main_baseline_rnn.py 10 207776314
+python main_baseline_rnn.py 10 908054
+python main_baseline_rnn.py 5 1273805
+
+1>
+test_rnn_turning_point(window=window, window_list=[3], machineID=machineID, isRaw=False, isCurr=True)
+2>
+def _build_model(time_step, fearure_dim):
+    i = Input(shape=(time_step, fearure_dim))
+    # m = RNN(time_step, fearure_dim)(i)
+    # m = RNN_SEPARATE(time_step, fearure_dim)(i)
+    m = RNN_SEPARATE_2(time_step, fearure_dim)(i)
+    m = Dense(1, activation='sigmoid')(m)
+
+    model = Model(inputs=[i], outputs=[m])
+
+    model.summary()
+    model.compile(optimizer=optimizers.Adam(lr=0.001, clipvalue=15), loss=focal_loss(alpha=0.75, gamma=0)) #alpha=0.75, gamma=0 Adam(lr=0.0001)
+    return model
+3>
+def build_test(datas, machineID):
+    train_data, train_labels, val_data, val_labels, test_data, test_labels = datas
+
+    num_samples = train_data.shape[0]
+    time_step = train_data.shape[1]
+    fearure_dim = train_data.shape[2]
+
+    model = _build_model(time_step, fearure_dim)
+    print('Test...')
+    model_save_path = './lib_pure_curr/lib/model_cp_rnn_{}'.format(machineID)
+    # model_save_path = './lib_pure_curr/lib/model_cp_rnn_{}'.format(machineID)
+    model.load_weights(model_save_path)
+    return model
+4>
+def build_train():
+    model_save_path = './lib/model_cp_rnn_{}'.format(machineID)
